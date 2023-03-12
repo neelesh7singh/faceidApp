@@ -7,9 +7,26 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Image,
+  Button,
 } from 'react-native';
+import RadioButton from 'react-native-radio-button';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 export default class Welcome extends Component {
+  constructor() {
+    super();
+    this.state = {
+      languagePopUp: false,
+      selectedLaunguage: 'English',
+      languages: [
+        {title: 'English', code: 'English'},
+        {title: 'Tamil', code: 'Tamil'},
+        {title: 'Telugu', code: 'Telugu'},
+        {title: 'Kanadda', code: 'Kanadda'},
+      ],
+    };
+  }
+
   naviagateToLogin = () => {
     this.props.navigation.navigate('Login');
   };
@@ -19,11 +36,27 @@ export default class Welcome extends Component {
       <SafeAreaView style={styles.container}>
         {/* ------------HEADER---------------- */}
         <View style={styles.header}>
-          <Image
-            source={require('../../../assets/app-logo.png')}
-            style={styles.appLogo}
-          />
-          <Text style={styles.appTitle}>FACE ID</Text>
+          <View style={styles.logoContainer}>
+            <Image
+              source={require('../../../assets/app-logo.png')}
+              style={styles.appLogo}
+            />
+            <Text style={styles.appTitle}>FACE ID</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.translateButton}
+            activeOpacity={0.9}
+            onPress={() => {
+              this.setState({...this.state, languagePopUp: true});
+            }}>
+            <Image
+              source={require('../../../assets/g-translate-icon.png')}
+              style={styles.translateLogo}
+            />
+            <Text style={styles.translateText}>
+              {this.state.selectedLaunguage}
+            </Text>
+          </TouchableOpacity>
         </View>
 
         {/* ------------BODY---------------- */}
@@ -68,6 +101,69 @@ export default class Welcome extends Component {
             Privacy Policy.
           </Text>
         </View>
+
+        {this.state.languagePopUp && (
+          <View style={styles.languagePopUpBackground}>
+            <View style={styles.languagePopUp}>
+              <View style={styles.closeIconContainer}>
+                <TouchableOpacity
+                  onPress={() => {
+                    this.setState({...this.state, languagePopUp: false});
+                  }}>
+                  <Icon
+                    style={styles.closeIcon}
+                    name="close-outline"
+                    size={30}
+                  />
+                </TouchableOpacity>
+              </View>
+              <View>
+                <Text style={styles.languagePopUpHeading}>Change Language</Text>
+                <Text style={styles.languagePopUpSubheading}>
+                  Which language do you prefer?
+                </Text>
+              </View>
+              <View style={styles.languageContainer}>
+                {this.state.languages.map(language => {
+                  return (
+                    <View key={language.code}>
+                      <View style={styles.language}>
+                        <Text style={styles.languageText}>
+                          {language.title}
+                        </Text>
+                        <RadioButton
+                          animation={'bounceIn'}
+                          isSelected={
+                            this.state.selectedLaunguage === language.code
+                          }
+                          onPress={() =>
+                            this.setState({
+                              ...this.state,
+                              selectedLaunguage: language.code,
+                            })
+                          }
+                          innerColor={'#4A8A0E'}
+                          outerColor={'#4A8A0E'}
+                        />
+                      </View>
+                      <View style={styles.line} />
+                    </View>
+                  );
+                })}
+              </View>
+              <TouchableOpacity
+                activeOpacity={0.9}
+                style={styles.languageButton}
+                onPress={() => {
+                  this.setState({...this.state, languagePopUp: false});
+                }}>
+                <Text style={styles.languageButtonText}>
+                  Continue in {this.state.selectedLaunguage}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
       </SafeAreaView>
     );
   }
@@ -82,11 +178,15 @@ const styles = StyleSheet.create({
   header: {
     padding: 12,
     flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   appLogo: {
     width: 30,
     height: 30,
     borderRadius: 15,
+  },
+  logoContainer: {
+    flexDirection: 'row',
   },
   appTitle: {
     fontFamily: 'Staatliches',
@@ -178,4 +278,105 @@ const styles = StyleSheet.create({
     fontSize: 12,
     textAlign: 'center',
   },
+  languagePopUpBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+  },
+  languagePopUp: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    alignItems: 'flex-start',
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+  },
+  languageContainer: {
+    width: 350,
+    marginLeft: 20,
+  },
+  language: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  languageText: {
+    fontSize: 16,
+    fontWeight: 600,
+    color: 'black',
+    marginBottom: 18,
+    marginTop: 15,
+  },
+  line: {
+    height: 1,
+    backgroundColor: '#BDBDBC',
+  },
+  languagePopUpHeading: {
+    fontSize: 20,
+    marginLeft: 20,
+    marginTop: 27,
+    color: 'black',
+    fontWeight: 700,
+    marginBottom: 5,
+  },
+  languagePopUpSubheading: {
+    fontSize: 14,
+    fontWeight: 400,
+    marginLeft: 20,
+    marginBottom: 47,
+    color: '#545454',
+  },
+  languageButton: {
+    backgroundColor: '#4A8A0E',
+    borderWidth: 2,
+    borderColor: '#4A8A0E',
+    borderRadius: 30,
+    width: 350,
+    height: 50,
+    marginHorizontal: '5%',
+    alignSelf: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'column',
+    marginTop: 30,
+    marginBottom: 25,
+  },
+  languageButtonText: {
+    fontSize: 16,
+    color: 'white',
+    fontWeight: 700,
+  },
+  closeIconContainer: {
+    backgroundColor: 'white',
+    position: 'absolute',
+    top: -74,
+    right: 25,
+    height: 53,
+    width: 50,
+    alignSelf: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+  },
+  closeIcon: {color: 'black'},
+  translateButton: {
+    flexDirection: 'row',
+    alignSelf: 'center',
+    alignContent: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 25,
+    borderWidth: 1,
+    borderColor: '#EFEEEF',
+    paddingHorizontal: 13,
+    paddingVertical: 8,
+  },
+  translateLogo: {width: 13, height: 12, marginRight: 7},
+  translateText: {fontSize: 16, fontWeight: 400, color: '#545454'},
 });
